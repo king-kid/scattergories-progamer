@@ -18,150 +18,198 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-    
-    .pro-header { width: 100%; text-align: center; padding: 0.5rem 0; margin-bottom: 0.5rem; }
-    .pro-title { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 2px; }
-    .pro-title span { color: #c8a000; }
 
-    #start-screen, #time-up-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; min-height: 85vh; text-align: center; }
-    .game-title { font-family: 'Bebas Neue', sans-serif; font-size: 5.5rem; line-height: 0.9; }
+    .game-title { font-family: 'Bebas Neue', sans-serif; font-size: 5rem; }
     .game-title span { color: #c8a000; }
-    
-    .start-btn { background: #111111; color: #ffffff; border: none; padding: 1rem 2.5rem; font-family: 'Bebas Neue', sans-serif; font-size: 2rem; cursor: pointer; border-radius: 8px; }
 
-    #play-screen { display: none; width: 100%; max-width: 1150px; }
-    
-    .top-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem; border-bottom: 3px solid #f0f0f0; padding-bottom: 0.3rem; }
-    .letter-badge { font-family: 'Bebas Neue', sans-serif; font-size: 6rem; color: #c8a000; line-height: 0.8; }
-    #timer { font-family: 'Bebas Neue', sans-serif; font-size: 6rem; color: #111111; line-height: 0.8; }
-    #timer.urgent { color: #cc2222; animation: pulse 0.5s infinite alternate; }
-    @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
+    #start-screen, #time-up-screen {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 1.5rem; min-height: 85vh;
+    }
 
-    /* Balanced Category Grid */
-    .categories-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
-    @media (max-width: 800px) { .categories-grid { grid-template-columns: 1fr; } }
-    
-    .cat-card { background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 15px; min-height: 85px; }
-    .cat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: #c8a000; min-width: 30px; }
-    .cat-text { font-size: 1.35rem; font-weight: 600; line-height: 1.2; } 
-    .letter-hint { color: #c8a000; font-weight: 700; }
+    .start-btn {
+      background: #111; color: #fff;
+      border: none; padding: 1rem 2rem;
+      font-family: 'Bebas Neue'; font-size: 1.8rem;
+      cursor: pointer; border-radius: 8px;
+      margin: 5px;
+    }
 
-    .bottom-bar { display: flex; gap: 15px; width: 100%; padding-bottom: 1rem; }
-    .action-btn { flex: 1; padding: 0.8rem; font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; cursor: pointer; border-radius: 8px; border: 2px solid #111111; background: white; }
-    .action-btn.primary { background: #111111; color: white; }
+    #play-screen { display: none; width: 100%; max-width: 1100px; }
 
-    .scoring-box { font-size: 1.3rem; background: #fffdf2; padding: 1.2rem; border-radius: 10px; border: 2px dashed #c8a000; margin-bottom: 1rem; }
+    .top-bar {
+      display: flex; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .letter-badge, #timer {
+      font-family: 'Bebas Neue';
+      font-size: 5rem;
+    }
+
+    .letter-badge { color: #c8a000; }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 800px) {
+      .categories-grid { grid-template-columns: 1fr; }
+    }
+
+    .cat-card {
+      border: 1px solid #ddd;
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .cat-num { color: #c8a000; font-weight: bold; }
+
+    .bottom-bar {
+      margin-top: 1rem;
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 0.8rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .primary { background: black; color: white; }
   </style>
 </head>
+
 <body>
 
-  <div id="start-screen">
-    <div class="game-title">SCATTER<span>GORIES</span></div>
-    <p style="font-size: 1.2rem; color: #888; letter-spacing: 3px;">PRO-GAMER EDITION</p>
-    <button class="start-btn" onclick="startGame()">Start Game</button>
+<div id="start-screen">
+  <div class="game-title">SCATTER<span>GORIES</span></div>
+  <button class="start-btn" onclick="startGame('beginner')">Beginner</button>
+  <button class="start-btn" onclick="startGame('pro')">Pro Gamer</button>
+</div>
+
+<div id="play-screen">
+  <div class="top-bar">
+    <div class="letter-badge" id="letter-display">A</div>
+    <div id="timer">60</div>
   </div>
 
-  <div id="play-screen">
-    <div class="pro-header">
-      <h1 class="pro-title">SCATTERGORIES <span>PRO-GAMER</span></h1>
-    </div>
+  <div id="categories" class="categories-grid"></div>
 
-    <div class="top-bar">
-      <div><p style="font-size:0.8rem; text-transform:uppercase; color:#888;">Current Letter</p><div class="letter-badge" id="letter-display">S</div></div>
-      <div><p style="font-size:0.8rem; text-transform:uppercase; color:#888; text-align:right;">Timer</p><div id="timer">60</div></div>
-    </div>
-    
-    <div class="categories-grid" id="categories"></div>
-    
-    <div class="bottom-bar">
-      <button class="action-btn" onclick="startGame()">New Round</button>
-      <button class="action-btn primary" onclick="stopTimer()">Stop Timer</button>
-    </div>
+  <div class="bottom-bar">
+    <button class="action-btn" onclick="startGame()">New Round</button>
+    <button class="action-btn primary" onclick="stopTimer()">Stop</button>
   </div>
+</div>
 
-  <div id="time-up-screen" style="display:none;">
-    <div class="game-title" style="color:#cc2222; font-size:4.5rem; margin-bottom: 1rem;">Is that all you gat!!!?</div>
-    <div class="scoring-box">
-      <strong>Scoring: +1 Unique | 0 Duplicate</strong>
-    </div>
-    <button class="start-btn" onclick="startGame()">Next Round</button>
-  </div>
+<div id="time-up-screen" style="display:none;">
+  <div class="game-title">TIME UP!</div>
+  <button class="start-btn" onclick="startGame()">Next Round</button>
+</div>
 
-  <script>
-    const DATA = {
-      "S": ["A country", "A city", "A food or drink", "An animal", "A famous person", "A car brand", "A movie or TV show", "Something at the beach", "Something for vacation", "A sports team", "A musical artist", "A job or profession"],
-      "B": ["A country", "A fruit or vegetable", "A type of clothing", "An animal", "A car brand", "A movie or TV show", "A school subject", "Something in a kitchen", "A musical artist", "A world leader", "A holiday destination", "A children's game"],
-      "M": ["A country", "A city", "A food or drink", "Something round", "A famous person", "A car brand", "A hobby or sport", "A body of water", "A boy's name", "A girl's name", "Something cold", "A piece of furniture"]
-    };
+<script>
+const QUESTION_BANK = {
+  beginner: [
+    "A fruit","An animal","A cartoon character","A color",
+    "A toy","A snack","A drink","A superhero",
+    "A game","Something in a classroom","Something you wear",
+    "A body part","A vegetable","A bird","A movie",
+    "Something cold","Something hot","A country","A city",
+    "A holiday","A job","A sport","A musical instrument",
+    "Something funny","Something scary"
+  ],
+  pro: [
+    "A country","A capital city","A global company","A startup",
+    "A movie","A Netflix show","A song","A music artist",
+    "A book","An author","A historical event","A scientist",
+    "A car brand","A luxury brand","A phone brand",
+    "A politician","A business term","A sport",
+    "A sports team","A famous person","A tourist destination",
+    "A tech company","A social media platform",
+    "Something expensive","Something embarrassing",
+    "Something addictive","Something powerful","Something rare"
+  ]
+};
 
-    let timerInterval = null;
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let currentLevel = "beginner";
+let lastLetter = null;
+let lastQuestions = [];
+let timerInterval;
 
-    function playSound(freq, duration, type = 'sine') {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration);
-    }
+function getRandomLetter() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+  let letter;
+  do {
+    letter = letters[Math.floor(Math.random()*letters.length)];
+  } while(letter === lastLetter);
+  lastLetter = letter;
+  return letter;
+}
 
-    function startGame() {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const letters = Object.keys(DATA);
-      const letter = letters[Math.floor(Math.random() * letters.length)];
-      const categories = DATA[letter];
+function getRandomQuestions(pool, count=10) {
+  let selected;
+  do {
+    selected = [...pool].sort(()=>0.5-Math.random()).slice(0,count);
+  } while(JSON.stringify(selected) === JSON.stringify(lastQuestions));
+  lastQuestions = selected;
+  return selected;
+}
 
-      document.getElementById('start-screen').style.display = 'none';
-      document.getElementById('time-up-screen').style.display = 'none';
-      document.getElementById('play-screen').style.display = 'block';
-      document.getElementById('letter-display').textContent = letter;
+function startGame(level=currentLevel) {
+  currentLevel = level;
 
-      const grid = document.getElementById('categories');
-      grid.innerHTML = '';
-      categories.forEach((cat, i) => {
-        // This is the logic that adds the extra text dynamically
-        const categoryText = `${cat} starting with letter <span class="letter-hint">${letter}</span>`;
-        
-        grid.innerHTML += `
-          <div class="cat-card">
-            <span class="cat-num">${i+1}</span>
-            <span class="cat-text">${categoryText}</span>
-          </div>`;
-      });
+  const letter = getRandomLetter();
+  const questions = getRandomQuestions(QUESTION_BANK[currentLevel]);
 
-      let timeLeft = 60; 
-      const display = document.getElementById('timer');
-      display.classList.remove('urgent');
-      display.textContent = timeLeft;
-      
+  document.getElementById("start-screen").style.display="none";
+  document.getElementById("time-up-screen").style.display="none";
+  document.getElementById("play-screen").style.display="block";
+
+  document.getElementById("letter-display").textContent = letter;
+
+  const grid = document.getElementById("categories");
+  grid.innerHTML="";
+
+  questions.forEach((q,i)=>{
+    grid.innerHTML += `
+      <div class="cat-card">
+        <span class="cat-num">${i+1}</span>
+        <span>${q} starting with <b>${letter}</b></span>
+      </div>
+    `;
+  });
+
+  let time=60;
+  document.getElementById("timer").textContent=time;
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    time--;
+    document.getElementById("timer").textContent=time;
+
+    if(time<=0){
       clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        display.textContent = timeLeft;
-        if (timeLeft <= 10 && timeLeft > 0) {
-          display.classList.add('urgent');
-          playSound(440, 0.05); 
-        }
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          playSound(110, 1.2, 'sawtooth'); 
-          document.getElementById('play-screen').style.display = 'none';
-          document.getElementById('time-up-screen').style.display = 'flex';
-        }
-      }, 1000);
+      endRound();
     }
+  },1000);
+}
 
-    function stopTimer() {
-      clearInterval(timerInterval);
-      playSound(110, 1.2, 'sawtooth'); 
-      document.getElementById('play-screen').style.display = 'none';
-      document.getElementById('time-up-screen').style.display = 'flex';
-    }
-  </script>
+function stopTimer(){
+  clearInterval(timerInterval);
+  endRound();
+}
+
+function endRound(){
+  document.getElementById("play-screen").style.display="none";
+  document.getElementById("time-up-screen").style.display="flex";
+}
+</script>
+
 </body>
 </html>
