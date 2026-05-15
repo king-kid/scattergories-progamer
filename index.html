@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scattergories - Pro-Gamer</title>
+  <title>Scattergories - Pro-Gamer Edition</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet" />
 
@@ -14,6 +14,7 @@
       --dark: #0a0a0a;
       --card-bg: rgba(10,10,10,0.72);
       --overlay: rgba(0,0,0,0.62);
+      --danger-red: rgba(255, 34, 68, 0.4);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +31,7 @@
       position: relative;
     }
 
-    /* ===== BACKGROUND VIDEO ===== */
+    /* ===== BACKGROUND VIDEO & OVERLAYS ===== */
     #bg-video {
       position: fixed;
       top: 0; left: 0;
@@ -40,7 +41,6 @@
       filter: saturate(1.2) contrast(1.05) brightness(0.75);
     }
 
-    /* fallback gradient if video fails */
     #bg-fallback {
       position: fixed;
       top: 0; left: 0;
@@ -49,18 +49,26 @@
       z-index: -3;
     }
 
-    /* dark cinematic overlay */
     #bg-overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       background: var(--overlay);
       z-index: -1;
-      /* vignette effect */
       box-shadow: inset 0 0 120px rgba(0,0,0,0.7);
+      transition: background 0.3s ease;
     }
 
-    /* ===== TITLE ===== */
+    #bg-overlay.adrenaline-pump {
+      animation: flashPulse 1s infinite alternate;
+    }
+
+    @keyframes flashPulse {
+      from { background: rgba(20, 0, 0, 0.75); box-shadow: inset 0 0 150px rgba(255,34,68,0.3); }
+      to { background: rgba(0, 0, 0, 0.65); box-shadow: inset 0 0 100px rgba(0,0,0,0.8); }
+    }
+
+    /* ===== TITLE STYLING ===== */
     .game-title {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(3.5rem, 10vw, 6rem);
@@ -68,7 +76,6 @@
       line-height: 1;
       text-shadow: 0 4px 30px rgba(200,160,0,0.4);
     }
-
     .game-title span { color: var(--gold); }
 
     .tagline {
@@ -79,10 +86,13 @@
       margin-top: 0.3rem;
     }
 
-    /* ===== SCREENS ===== */
+    /* ===== SCREENS MANAGER ===== */
     #start-screen,
-    #time-up-screen {
-      display: flex;
+    #play-screen,
+    #review-screen {
+      display: none;
+      width: 100%;
+      max-width: 1100px;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -91,7 +101,9 @@
       text-align: center;
     }
 
-    /* level buttons */
+    #start-screen { display: flex; } /* Initial default state */
+    #play-screen { text-align: left; }
+
     .level-buttons {
       display: flex;
       gap: 1rem;
@@ -101,7 +113,7 @@
     }
 
     .start-btn {
-      background: transparent;
+      background: rgba(255,255,255,0.06);
       color: #fff;
       border: 2px solid rgba(255,255,255,0.3);
       padding: 0.9rem 2.4rem;
@@ -112,9 +124,7 @@
       border-radius: 6px;
       transition: all 0.2s ease;
       backdrop-filter: blur(8px);
-      background: rgba(255,255,255,0.06);
     }
-
     .start-btn:hover {
       border-color: var(--gold);
       color: var(--gold);
@@ -122,26 +132,17 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 24px rgba(200,160,0,0.2);
     }
-
     .start-btn.pro {
       border-color: var(--gold);
       color: var(--gold);
       background: rgba(200,160,0,0.12);
     }
-
     .start-btn.pro:hover {
       background: rgba(200,160,0,0.25);
       box-shadow: 0 8px 32px rgba(200,160,0,0.35);
     }
 
-    /* ===== PLAY SCREEN ===== */
-    #play-screen {
-      display: none;
-      width: 100%;
-      max-width: 1100px;
-      padding-top: 0.5rem;
-    }
-
+    /* ===== TOP INTERFACE BAR ===== */
     .top-bar {
       display: flex;
       justify-content: space-between;
@@ -149,6 +150,7 @@
       margin-bottom: 1rem;
       padding: 0.5rem 0;
       border-bottom: 1px solid rgba(200,160,0,0.25);
+      width: 100%;
     }
 
     .letter-badge {
@@ -171,11 +173,10 @@
       line-height: 1;
       transition: color 0.3s;
     }
-
     #timer.warning { color: #ff6b35; text-shadow: 0 0 20px rgba(255,107,53,0.5); }
-    #timer.danger  { color: #ff2244; text-shadow: 0 0 20px rgba(255,34,68,0.6); animation: pulse 0.5s infinite alternate; }
+    #timer.danger  { color: #ff2244; text-shadow: 0 0 20px rgba(255,34,68,0.6); animation: textPulse 0.5s infinite alternate; }
 
-    @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
+    @keyframes textPulse { from { opacity: 1; } to { opacity: 0.6; } }
 
     .timer-label {
       font-size: 0.7rem;
@@ -184,11 +185,12 @@
       color: rgba(255,255,255,0.4);
     }
 
-    /* ===== CATEGORY GRID ===== */
+    /* ===== GRID AND STAGGERED INTROS ===== */
     .categories-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 12px;
+      width: 100%;
     }
 
     @media (max-width: 700px) {
@@ -197,19 +199,31 @@
 
     .cat-card {
       border: 1px solid rgba(255,255,255,0.1);
-      padding: 0.85rem 1rem;
+      padding: 1rem;
       border-radius: 8px;
       display: flex;
-      gap: 10px;
-      align-items: flex-start;
+      flex-direction: column;
+      gap: 8px;
       background: var(--card-bg);
       backdrop-filter: blur(10px);
       transition: border-color 0.2s, background 0.2s;
+      opacity: 0;
+      animation: cardSlideIn 0.4s cubic-bezier(0.12, 1, 0.33, 1) forwards;
     }
-
     .cat-card:hover {
       border-color: rgba(200,160,0,0.4);
       background: rgba(20,20,20,0.85);
+    }
+
+    @keyframes cardSlideIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .cat-header {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
     }
 
     .cat-num {
@@ -217,17 +231,75 @@
       font-weight: 700;
       font-size: 0.85rem;
       min-width: 20px;
-      margin-top: 1px;
     }
 
-    .cat-card span:last-child { font-size: 0.92rem; line-height: 1.4; }
+    .cat-card span:last-child { font-size: 0.95rem; line-height: 1.4; }
     .cat-card b { color: var(--gold-light); }
 
-    /* ===== BOTTOM BAR ===== */
+    /* ===== GAMEPLAY INPUT FIELD ===== */
+    .game-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      padding: 0.6rem 0.8rem;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .game-input:focus {
+      border-color: var(--gold);
+      background: rgba(200, 160, 0, 0.08);
+      box-shadow: 0 0 10px rgba(200, 160, 0, 0.2);
+    }
+
+    /* ===== SCORE REVIEW UI ===== */
+    .scoring-layout {
+      width: 100%;
+      max-height: 60vh;
+      overflow-y: auto;
+      background: rgba(10, 10, 10, 0.85);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .review-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      text-align: left;
+      gap: 15px;
+    }
+    .review-prompt { flex: 2; }
+    .review-answer { flex: 2; color: var(--gold-light); font-weight: 600; font-style: italic; }
+    .review-action { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+
+    .score-checkbox {
+      width: 20px; height: 20px;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+
+    .score-dashboard {
+      font-family: 'Bebas Neue';
+      font-size: 2.5rem;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .score-dashboard span { color: var(--gold); }
+
+    /* ===== CONTROL DECKS ===== */
     .bottom-bar {
       margin-top: 1rem;
       display: flex;
       gap: 10px;
+      width: 100%;
     }
 
     .action-btn {
@@ -241,30 +313,22 @@
       border: none;
       transition: all 0.2s;
     }
-
     .action-btn.secondary {
       background: rgba(255,255,255,0.1);
       color: #fff;
       border: 1px solid rgba(255,255,255,0.2);
     }
-
     .action-btn.secondary:hover { background: rgba(255,255,255,0.18); }
 
     .action-btn.primary {
       background: var(--gold);
       color: #000;
     }
-
     .action-btn.primary:hover {
       background: var(--gold-light);
       box-shadow: 0 4px 20px rgba(200,160,0,0.4);
     }
 
-    /* ===== TIME UP ===== */
-    #time-up-screen .game-title { color: #ff2244; text-shadow: 0 0 40px rgba(255,34,68,0.5); }
-    #time-up-screen .game-title span { color: #ff6b35; }
-
-    /* ===== LEVEL BADGE ===== */
     .level-badge {
       font-size: 0.7rem;
       letter-spacing: 0.2em;
@@ -277,65 +341,26 @@
 
 <body>
 
-<!-- BACKGROUND LAYERS -->
 <div id="bg-fallback"></div>
 
-<!--
-  🎥 BACKGROUND VIDEO
-  Using a free Pexels CC0 video — cinematic city/urban timelapse feel.
-  You can swap the src to any .mp4 URL or a local file path.
-  Multiple <source> tags = fallback chain.
--->
 <video autoplay muted loop playsinline id="bg-video" onerror="this.style.display='none'">
-  <!--
-    🎮 GAMING-THEMED BACKGROUND VIDEOS — all free, no watermark (Mixkit CDN)
-    The browser tries each <source> in order and uses the first one that loads.
-
-    🔥 OPTION 1 (ACTIVE): Burning lava / fire particles — intense & gamer-core
-    🌌 OPTION 2: Floating particles at night — moody dark space feel
-    ⚡ OPTION 3: Luminous particles on black — clean sci-fi energy
-    💥 OPTION 4: Particle explosion, smoke and fire — cinematic action
-    🟣 OPTION 5: Particles and purple light — neon arcade vibes
-
-    To switch, move your preferred <source> to the TOP of the list.
-  -->
-
-<!-- 🌌 Floating particles at night -->
   <source src="https://assets.mixkit.co/videos/47356/47356-720.mp4" type="video/mp4">
-  <!-- 🟣 Particles and purple light -->
-  <source src="https://assets.mixkit.co/videos/18059/18059-720.mp4" type="video/mp4">
-</video>
-  <!-- ⚡ Luminous particles on black -->
-  <source src="https://assets.mixkit.co/videos/18142/18142-720.mp4" type="video/mp4">
-
-  
-
-  <!-- 🔥 ACTIVE: Burning lava particles -->
-  <source src="https://assets.mixkit.co/videos/4426/4426-720.mp4" type="video/mp4">
-
-  
-
-  
-
-  
-
-  <!-- 🟣 Particles and purple light -->
   <source src="https://assets.mixkit.co/videos/18059/18059-720.mp4" type="video/mp4">
 </video>
 
 <div id="bg-overlay"></div>
 
-<!-- ===== START SCREEN ===== -->
+<!-- ===== START CONTAINER ===== -->
 <div id="start-screen">
   <div class="game-title">SCATTER<span>GORIES</span></div>
-  <p class="tagline">Think fast. Start with the letter.</p>
+  <p class="tagline">Think fast. Conquer the letter.</p>
   <div class="level-buttons">
-    <button class="start-btn" onclick="startGame('beginner')">Beginner</button>
-    <button class="start-btn pro" onclick="startGame('pro')">⚡ Pro Gamer</button>
+    <button class="start-btn" onclick="triggerRoulette('beginner')">Beginner</button>
+    <button class="start-btn pro" onclick="triggerRoulette('pro')">⚡ Pro Gamer</button>
   </div>
 </div>
 
-<!-- ===== GAME SCREEN ===== -->
+<!-- ===== ENGINE PLAY CONTAINER ===== -->
 <div id="play-screen">
   <div class="top-bar">
     <div>
@@ -351,16 +376,22 @@
   <div id="categories" class="categories-grid"></div>
 
   <div class="bottom-bar">
-    <button class="action-btn secondary" onclick="startGame()">↺ New Round</button>
-    <button class="action-btn primary" onclick="stopTimer()">Stop</button>
+    <button class="action-btn secondary" onclick="goHome()">↺ Quit Match</button>
+    <button class="action-btn primary" onclick="stopTimer()">Stop & Review</button>
   </div>
 </div>
 
-<!-- ===== TIME UP SCREEN ===== -->
-<div id="time-up-screen" style="display:none;">
-  <div class="game-title">TIME<span>UP!</span></div>
-  <button class="start-btn pro" onclick="startGame()">Next Round →</button>
-  <button class="start-btn" onclick="goHome()">↩ Home</button>
+<!-- ===== REVIEW & SCORING CONTAINER ===== -->
+<div id="review-screen">
+  <div class="game-title">ROUND<span>OVER</span></div>
+  <div class="score-dashboard">Total Score: <span id="live-score-tally">0</span> Pts</div>
+  
+  <div class="scoring-layout" id="review-list-wrapper"></div>
+
+  <div class="bottom-bar" style="max-width: 500px;">
+    <button class="start-btn pro" style="flex: 1;" onclick="triggerRoulette(currentLevel)">Next Round →</button>
+    <button class="start-btn" style="flex: 1;" onclick="goHome()">↩ Home</button>
+  </div>
 </div>
 
 <script>
@@ -389,8 +420,41 @@ const QUESTION_BANK = {
 
 let currentLevel = "beginner";
 let lastLetter = null;
+let currentRoundLetter = "A";
 let lastQuestions = [];
 let timerInterval;
+let activeQuestions = [];
+
+// ===== RETRO ARCADE NATIVE AUDIO SYNTH ENGINE =====
+const AudioEngine = {
+  ctx: null,
+  init() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  },
+  playTone(freq, type, duration, vol = 0.1) {
+    this.init();
+    try {
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      gainNode.gain.setValueAtTime(vol, this.ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.00001, this.ctx.currentTime + duration);
+      osc.connect(gainNode);
+      gainNode.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + duration);
+    } catch(e) { console.log("Audio node playback error context:", e); }
+  },
+  playClick() { this.playTone(600, 'sine', 0.05, 0.12); },
+  playTick() { this.playTone(880, 'triangle', 0.08, 0.15); },
+  playBuzzer() {
+    this.playTone(120, 'sawtooth', 0.6, 0.3);
+    this.playTone(118, 'square', 0.6, 0.2);
+  }
+};
 
 function getRandomLetter() {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
@@ -409,42 +473,105 @@ function getRandomQuestions(pool, count = 10) {
   return selected;
 }
 
-function startGame(level = currentLevel) {
+// ===== SELECTION ROULETTE REEL =====
+function triggerRoulette(level) {
   currentLevel = level;
+  AudioEngine.init();
 
-  const letter   = getRandomLetter();
-  const questions = getRandomQuestions(QUESTION_BANK[currentLevel]);
+  document.getElementById("start-screen").style.display = "none";
+  document.getElementById("time-up-screen-fallback") ? document.getElementById("time-up-screen-fallback").style.display = "none" : null;
+  document.getElementById("review-screen").style.display = "none";
+  document.getElementById("play-screen").style.display = "block";
 
-  document.getElementById("start-screen").style.display  = "none";
-  document.getElementById("time-up-screen").style.display = "none";
-  document.getElementById("play-screen").style.display   = "block";
+  // Prep fresh variables 
+  document.getElementById("timer").textContent = "--";
+  const letterDisplay = document.getElementById("letter-display");
+  
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let microDuration = 60; 
+  let iterations = 0;
 
-  document.getElementById("letter-display").textContent  = letter;
-  document.getElementById("level-badge").textContent     = level === "pro" ? "⚡ Pro Gamer" : "Beginner";
+  function runReel() {
+    const tempLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+    letterDisplay.textContent = tempLetter;
+    AudioEngine.playClick();
+    iterations++;
+
+    if (iterations < 20) {
+      setTimeout(runReel, microDuration + (iterations * 8)); // Slowly decay acceleration speed
+    } else {
+      currentRoundLetter = getRandomLetter();
+      letterDisplay.textContent = currentRoundLetter;
+      executeMatchStart();
+    }
+  }
+  runReel();
+}
+
+function executeMatchStart() {
+  activeQuestions = getRandomQuestions(QUESTION_BANK[currentLevel]);
+
+  document.getElementById("level-badge").textContent = currentLevel === "pro" ? "⚡ Pro Gamer" : "Beginner";
 
   const grid = document.getElementById("categories");
   grid.innerHTML = "";
-  questions.forEach((q, i) => {
+  
+  activeQuestions.forEach((q, i) => {
+    // Inject custom animation delays dynamically to build cascading visual entrance
     grid.innerHTML += `
-      <div class="cat-card">
-        <span class="cat-num">${i + 1}</span>
-        <span>${q} starting with <b>${letter}</b></span>
+      <div class="cat-card" style="animation-delay: ${i * 40}ms">
+        <div class="cat-header">
+          <span class="cat-num">${i + 1}</span>
+          <span>${q} starting with <b>${currentRoundLetter}</b></span>
+        </div>
+        <input type="text" class="game-input raw-answer-field" placeholder="Type answer here..." data-idx="${i}" />
       </div>`;
   });
 
+  // Attach strategic keyboard tracking inside input layout loop
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.raw-answer-field');
+    if(inputs.length > 0) inputs[0].focus();
+
+    inputs.forEach((input, index) => {
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (inputs[index + 1]) {
+            inputs[index + 1].focus();
+          } else {
+            stopTimer(); // Auto submit round when tapping Enter out of final card
+          }
+        }
+      });
+    });
+  }, 100);
+
   let time = 60;
   const timerEl = document.getElementById("timer");
+  const overlayEl = document.getElementById("bg-overlay");
   timerEl.textContent = time;
   timerEl.className = "";
+  overlayEl.className = "";
 
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
     time--;
     timerEl.textContent = time;
-    if (time <= 10) timerEl.className = "danger";
-    else if (time <= 20) timerEl.className = "warning";
+    
+    if (time <= 10) {
+      timerEl.className = "danger";
+      overlayEl.className = "adrenaline-pump";
+      AudioEngine.playTick();
+    } else if (time <= 20) {
+      timerEl.className = "warning";
+    }
 
-    if (time <= 0) { clearInterval(timerInterval); endRound(); }
+    if (time <= 0) { 
+      clearInterval(timerInterval); 
+      AudioEngine.playBuzzer();
+      endRound(); 
+    }
   }, 1000);
 }
 
@@ -453,17 +580,59 @@ function stopTimer() {
   endRound();
 }
 
+// ===== COMPILE AND EVALUATE TO REVIEW SCOREBOARD =====
 function endRound() {
-  document.getElementById("play-screen").style.display    = "none";
-  document.getElementById("time-up-screen").style.display = "flex";
+  document.getElementById("bg-overlay").className = "";
+  document.getElementById("play-screen").style.display = "none";
+  document.getElementById("review-screen").style.display = "flex";
+
+  const inputs = document.querySelectorAll('.raw-answer-field');
+  const reviewWrapper = document.getElementById("review-list-wrapper");
+  reviewWrapper.innerHTML = "";
+
+  activeQuestions.forEach((q, i) => {
+    const rawVal = inputs[i] ? inputs[i].value.trim() : "";
+    
+    // Perform basic client-side check to see if the string actually matches the designated game letter
+    const looksValid = rawVal.toLowerCase().startsWith(currentRoundLetter.toLowerCase()) && rawVal.length > 1;
+    const checkedAttribute = looksValid ? "checked" : "";
+
+    reviewWrapper.innerHTML += `
+      <div class="review-row">
+        <div class="review-prompt"><small style="color:var(--gold); font-weight:bold;">${i+1}.</small> ${q}</div>
+        <div class="review-answer">${rawVal ? rawVal : '[Left Blank]'}</div>
+        <div class="review-action">
+          <label style="font-size:0.8rem; cursor:pointer; color: ${looksValid ? '#fff' : 'rgba(255,255,255,0.4)'}">+1 Pt</label>
+          <input type="checkbox" class="score-checkbox" ${checkedAttribute} onclick="calculateLiveScores()" />
+        </div>
+      </div>`;
+  });
+
+  calculateLiveScores();
+}
+
+function calculateLiveScores() {
+  const checkboxes = document.querySelectorAll('.score-checkbox');
+  let aggregate = 0;
+  checkboxes.forEach(box => { if(box.checked) aggregate++; });
+  document.getElementById("live-score-tally").textContent = aggregate;
 }
 
 function goHome() {
   clearInterval(timerInterval);
-  document.getElementById("time-up-screen").style.display = "none";
-  document.getElementById("play-screen").style.display    = "none";
-  document.getElementById("start-screen").style.display   = "flex";
+  document.getElementById("bg-overlay").className = "";
+  document.getElementById("review-screen").style.display = "none";
+  document.getElementById("play-screen").style.display = "none";
+  document.getElementById("start-screen").style.display = "flex";
 }
+
+// Global window global controls mapping shortcut keys
+window.addEventListener('keydown', function(e) {
+  // Shortcut: If inside gameplay mode, space bar toggles emergency stop action (unless typing in field)
+  if (e.key === 'Escape' && document.getElementById("play-screen").style.display === "block") {
+    stopTimer();
+  }
+});
 </script>
 
 </body>
